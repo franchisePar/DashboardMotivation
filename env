@@ -1,0 +1,11 @@
+# Google Sheets Configuration
+GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END RSA PRIVATE KEY-----\n"
+GOOGLE_SHEET_ID=your_google_sheet_id_here
+
+# Server Configuration
+PORT=3001
+POLL_INTERVAL_MS=30000
+
+# Dashboard Settings
+DAILY_GOAL=50
