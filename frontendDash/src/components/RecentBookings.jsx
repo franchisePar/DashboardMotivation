@@ -40,10 +40,10 @@ export function RecentBookings({ bookings }) {
           <thead>
             <tr style={{ color: 'var(--muted)', fontSize: 'var(--text-xs)', textAlign: 'left' }}>
               <th style={{ padding: '6px 8px', fontWeight: 600 }}>Time</th>
-              <th style={{ padding: '6px 8px', fontWeight: 600 }}>Brand</th>
+              <th style={{ padding: '6px 8px', fontWeight: 600 }}>Reseration</th>
               <th style={{ padding: '6px 8px', fontWeight: 600 }}>Status</th>
               <th style={{ padding: '6px 8px', fontWeight: 600 }}>Country</th>
-              <th style={{ padding: '6px 8px', fontWeight: 600 }}>Reservation</th>
+              <th style={{ padding: '6px 8px', fontWeight: 600 }}>Brand</th>
             </tr>
           </thead>
           <tbody>
