@@ -43,6 +43,11 @@ function isToday(date) {
 }
 
 async function fetchSheetData() {
+  console.log('🔍 DEBUG ENV VARS:');
+  console.log('🔍 GOOGLE_SHEET_ID:', JSON.stringify(process.env.GOOGLE_SHEET_ID));
+  console.log('🔍 GOOGLE_SERVICE_ACCOUNT_EMAIL:', JSON.stringify(process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL));
+  console.log('🔍 GOOGLE_PRIVATE_KEY exists:', !!process.env.GOOGLE_PRIVATE_KEY);
+  console.log('🔍 ALL ENV KEYS:', Object.keys(process.env).filter(k => k.includes('GOOGLE')));
   try {
     const auth = getAuthClient();
     const sheets = google.sheets({ version: "v4", auth });
