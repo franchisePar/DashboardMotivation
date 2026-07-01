@@ -1,0 +1,14 @@
+# Google Sheets Configuration
+GOOGLE_SERVICE_ACCOUNT_EMAIL=rental-dashboard-robot@my-project-123456.iam.gserviceaccount.com
+GOOGLE_PRIVATE_KEY=116614915916542640060
+
+# Get this from your sheet URL:
+# https://docs.google.com/spreadsheets/d/THIS_PART_IS_THE_ID/edit
+GOOGLE_SHEET_ID=1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms
+
+# Server Configuration
+PORT=3001
+POLL_INTERVAL_MS=30000
+
+# Dashboard Settings
+DAILY_GOAL=300

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { io } from 'socket.io-client'
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'https://dashboardmotivation.onrender.com'
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
 
 export function useSocket() {
   const [connected, setConnected]     = useState(false)
@@ -53,6 +53,7 @@ export function useSocket() {
         timestamp,
       }
       setNewBookings(prev => [notif, ...prev].slice(0, 5))
+      // Auto-dismiss after 8s
       setTimeout(() => clearNewBooking(notif.id), 8000)
     })
 

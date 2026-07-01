@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { io } from 'socket.io-client'
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'https://dashboardmotivation.onrender.com'
+const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
 
 export function useSocket() {
   const [connected, setConnected]     = useState(false)
