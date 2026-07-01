@@ -1,61 +1,106 @@
 import { useEffect, useRef } from 'react'
 import { X, Sparkles, MapPin } from 'lucide-react'
-import { brandLogo, brandColor } from '../format'
 
+// ═══════════════════════════════════════════════════════════════
+// CONFIGS
+// ═══════════════════════════════════════════════════════════════
+
+// Brand configs → logo + color for the BRAND badge
 const BRAND_CONFIGS = {
-  UNITED: { color: '#0f27a2', glow: 'rgba(15, 39, 162, 0.5)' },
-  MOVIS:  { color: '#f94231', glow: 'rgba(249, 66, 49, 0.5)' },
-  DRIVO:  { color: '#c8fa1b', glow: 'rgba(200, 250, 27, 0.5)' }
+  UNITED: { 
+    color: '#0f27a2', 
+    glow: 'rgba(15, 39, 162, 0.5)',
+    logo: '/assets/logos/United_Logo_BG.png'   // ← update with your real path
+  },
+  MOVIS:  { 
+    color: '#f94231', 
+    glow: 'rgba(249, 66, 49, 0.5)',
+    logo: '/assets/logos/Movis_Logo_BG.png'    // ← update with your real path
+  },
+  DRIVO:  { 
+    color: '#c8fa1b', 
+    glow: 'rgba(200, 250, 27, 0.5)',
+    logo: '/assets/logos/Drivo_Logo_BG.png'   // ← update with your real path
+  }
+}
+
+// Status configs → color for the STATUS badge only
+const STATUS_CONFIGS = {
+  CONFIRMED:       { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
+  CANCELLED:       { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
+  CANCELED:        { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
+  PENDING:         { bg: 'rgba(234, 179, 8, 0.12)',  border: 'rgba(234, 179, 8, 0.3)',  dot: '#eab308', text: '#eab308' },
+  'NEW BOOKING':   { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
+  'NEW RESERVATION': { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
 }
 
 const CONFETTI_COLORS = ['#0f27a2', '#f94231', '#c8fa1b', '#eab308', '#22c55e', '#a855f7']
 const BW_COLORS = ['#888888', '#aaaaaa', '#cccccc', '#666666', '#999999', '#bbbbbb']
 
-// Status colors
-const STATUS_COLORS = {
-  CONFIRMED:   { bg: 'rgba(34, 197, 94, 0.08)',  border: 'rgba(34, 197, 94, 0.2)',  dot: '#22c55e', text: '#22c55e', label: '#22c55e88' },
-  CANCELLED:   { bg: 'rgba(239, 68, 68, 0.08)',  border: 'rgba(239, 68, 68, 0.2)',  dot: '#ef4444', text: '#ef4444', label: '#ef444488' },
-  CANCELED:    { bg: 'rgba(239, 68, 68, 0.08)',  border: 'rgba(239, 68, 68, 0.2)',  dot: '#ef4444', text: '#ef4444', label: '#ef444488' },
-  PENDING:     { bg: 'rgba(234, 179, 8, 0.08)',  border: 'rgba(234, 179, 8, 0.2)',  dot: '#eab308', text: '#eab308', label: '#eab30888' },
-  'NEW BOOKING': { bg: 'rgba(14, 165, 233, 0.08)', border: 'rgba(14, 165, 233, 0.2)', dot: '#0ea5e9', text: '#0ea5e9', label: '#0ea5e988' },
-  'NEW RESERVATION': { bg: 'rgba(14, 165, 233, 0.08)', border: 'rgba(14, 165, 233, 0.2)', dot: '#0ea5e9', text: '#0ea5e9', label: '#0ea5e988' },
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+function getBrandConfig(brand) {
+  const b = (brand || 'UNITED').toString().toUpperCase().trim()
+  return BRAND_CONFIGS[b] || BRAND_CONFIGS.UNITED
 }
+
+function getStatusConfig(status) {
+  const s = (status || 'CONFIRMED').toString().toUpperCase().trim()
+  const key = s === 'CANCELED' ? 'CANCELLED' : s
+  return STATUS_CONFIGS[key] || STATUS_CONFIGS.CONFIRMED
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════════
 
 export function NotificationToast({ booking, onDismiss }) {
   const canvasRef = useRef(null)
 
-  // Detect status
-  const rawStatus = (booking?.status || 'CONFIRMED').toUpperCase().trim()
-  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
-  const statusKey = rawStatus === 'CANCELED' ? 'CANCELLED' : rawStatus
-  const statusConfig = STATUS_COLORS[statusKey] || STATUS_COLORS.CONFIRMED
-
-  // Brand
-  const currentBrand = (booking?.brand || 'UNITED').toUpperCase()
-  const brandConfig = BRAND_CONFIGS[currentBrand] || BRAND_CONFIGS.UNITED
+  // ── Parse data ──────────────────────────────────────────────
+  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
+  const rawStatus = (booking?.status || 'CONFIRMED').toString().toUpperCase().trim()
   
-  // If cancelled → black & white
-  const styleMatch = isCancelled 
-    ? { color: '#888888', glow: 'rgba(128, 128, 128, 0.3)' }
-    : brandConfig
-
+  // ── Get configs ─────────────────────────────────────────────
+  const brandConfig = getBrandConfig(currentBrand)
+  const statusConfig = getStatusConfig(rawStatus)
+  
+  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
   const confettiColors = isCancelled ? BW_COLORS : CONFETTI_COLORS
 
+  // ── Style tokens ────────────────────────────────────────────
+  const cardBg = isCancelled 
+    ? 'linear-gradient(145deg, #1a1a1a, #0f0f0f)' 
+    : 'linear-gradient(145deg, #1a2130, #111827)'
+  
+  const cardBorder = `3px solid ${brandConfig.color}`
+  
+  const cardShadow = isCancelled 
+    ? '0 0 30px rgba(128,128,128,0.2), 0 16px 48px rgba(0,0,0,0.8)' 
+    : `0 0 60px ${brandConfig.glow}, 0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)`
+
+  // ════════════════════════════════════════════════════════════
+  // EFFECTS
+  // ════════════════════════════════════════════════════════════
+  
   useEffect(() => {
-    // 1. Play alert chime (only if not cancelled)
+    // Audio chime (skip if cancelled)
     if (!isCancelled) {
       try {
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav')
         audio.volume = 0.25
-        audio.play()
+        audio.play().catch(() => {})
       } catch (e) {
-        console.log("Audio presentation blocked by browser context rules")
+        // Audio blocked
       }
     }
 
-    // 2. Canvas Confetti Engine
+    // Canvas confetti
     const canvas = canvasRef.current
     let animationFrameId
+    let isActive = true
 
     if (canvas) {
       const ctx = canvas.getContext('2d')
@@ -83,6 +128,7 @@ export function NotificationToast({ booking, onDismiss }) {
       }
 
       const drawFrame = () => {
+        if (!isActive) return
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         particles.forEach((p) => {
           ctx.save()
@@ -101,21 +147,26 @@ export function NotificationToast({ booking, onDismiss }) {
       drawFrame()
 
       return () => {
+        isActive = false
         window.removeEventListener('resize', setSize)
         cancelAnimationFrame(animationFrameId)
       }
     }
+  }, [booking, isCancelled, confettiColors])
 
-    // 3. Auto-dismiss timer
-    const autoDismissTimer = setTimeout(onDismiss, 9000)
-    return () => clearTimeout(autoDismissTimer)
-  }, [booking, onDismiss, isCancelled, confettiColors])
+  // Auto-dismiss
+  useEffect(() => {
+    const timer = setTimeout(onDismiss, 9000)
+    return () => clearTimeout(timer)
+  }, [onDismiss])
 
-  const logoSrc = brandLogo(currentBrand)
-
+  // ════════════════════════════════════════════════════════════
+  // RENDER
+  // ════════════════════════════════════════════════════════════
+  
   return (
     <>
-      {/* Canvas Confetti */}
+      {/* Confetti Canvas */}
       <canvas
         ref={canvasRef}
         style={{
@@ -129,7 +180,7 @@ export function NotificationToast({ booking, onDismiss }) {
         }}
       />
 
-      {/* Backdrop blur */}
+      {/* Backdrop */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -139,7 +190,7 @@ export function NotificationToast({ booking, onDismiss }) {
         animation: 'backdropFadeIn 0.4s ease-out'
       }} />
 
-      {/* Card */}
+      {/* Toast Card */}
       <div 
         style={{
           position: 'fixed',
@@ -147,17 +198,13 @@ export function NotificationToast({ booking, onDismiss }) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 9999,
-          background: isCancelled 
-            ? 'linear-gradient(145deg, #1a1a1a, #0f0f0f)' 
-            : 'linear-gradient(145deg, #1a2130, #111827)',
-          border: `3px solid ${styleMatch.color}`,
+          background: cardBg,
+          border: cardBorder,
           borderRadius: '24px',
           padding: '36px 40px',
           width: '500px',
           maxWidth: '90vw',
-          boxShadow: isCancelled 
-            ? '0 0 30px rgba(128,128,128,0.2), 0 16px 48px rgba(0,0,0,0.8)' 
-            : `0 0 60px ${styleMatch.glow}, 0 24px 64px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05)`,
+          boxShadow: cardShadow,
           display: 'flex',
           flexDirection: 'column',
           gap: '20px',
@@ -188,7 +235,7 @@ export function NotificationToast({ booking, onDismiss }) {
           }
         `}} />
 
-        {/* Glow Ring */}
+        {/* Glow Ring (uses BRAND color) */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -197,7 +244,7 @@ export function NotificationToast({ booking, onDismiss }) {
           height: '120%',
           transform: 'translate(-50%, -50%)',
           borderRadius: '50%',
-          border: `2px solid ${styleMatch.color}`,
+          border: `2px solid ${brandConfig.color}`,
           opacity: 0.15,
           animation: 'pulse-ring 2s ease-out infinite',
           pointerEvents: 'none'
@@ -231,7 +278,7 @@ export function NotificationToast({ booking, onDismiss }) {
           {isCancelled ? '⚠️' : '✨'}
         </div>
 
-        {/* Close Button */}
+        {/* ── Close Button ────────────────────────────────────── */}
         <button 
           onClick={onDismiss} 
           style={{
@@ -261,7 +308,7 @@ export function NotificationToast({ booking, onDismiss }) {
           <X size={20} />
         </button>
 
-        {/* Header */}
+        {/* ── Header: Sparkle + Title ─────────────────────────── */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -271,20 +318,20 @@ export function NotificationToast({ booking, onDismiss }) {
           <div style={{
             background: isCancelled 
               ? 'linear-gradient(135deg, #666666, #444444)' 
-              : `linear-gradient(135deg, ${styleMatch.color}, ${styleMatch.color}88)`,
+              : `linear-gradient(135deg, ${brandConfig.color}, ${brandConfig.color}88)`,
             borderRadius: '12px',
             padding: '8px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: isCancelled ? 'none' : `0 0 20px ${styleMatch.glow}`
+            boxShadow: isCancelled ? 'none' : `0 0 20px ${brandConfig.glow}`
           }}>
             <Sparkles size={22} style={{ color: '#fff' }} />
           </div>
           <span style={{
             fontSize: '13px',
             fontWeight: 800,
-            color: styleMatch.color,
+            color: brandConfig.color,
             letterSpacing: '0.2em',
             textTransform: 'uppercase'
           }}>
@@ -292,7 +339,7 @@ export function NotificationToast({ booking, onDismiss }) {
           </span>
         </div>
 
-        {/* Reservation Number */}
+        {/* ── Reservation Number ──────────────────────────────── */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -314,28 +361,31 @@ export function NotificationToast({ booking, onDismiss }) {
             color: isCancelled ? '#888888' : '#ffffff',
             fontSize: '42px',
             letterSpacing: '-0.03em',
-            textShadow: isCancelled ? 'none' : `0 0 40px ${styleMatch.glow}`,
+            textShadow: isCancelled ? 'none' : `0 0 40px ${brandConfig.glow}`,
             lineHeight: 1
           }}>
             {booking?.reservationNumber || 'N/A'}
           </span>
         </div>
 
-        {/* BRAND NAME + LOGO (replaces old status badge) */}
+        {/* ═══════════════════════════════════════════════════════
+            BRAND BADGE (Logo + Brand Name) — ALWAYS SHOWS BRAND
+            Uses BRAND color (blue/red/lime)
+            ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           gap: '12px',
-          background: `${styleMatch.color}18`,
+          background: `${brandConfig.color}18`,
           padding: '12px 28px',
           borderRadius: '14px',
-          border: `2px solid ${styleMatch.color}44`,
-          boxShadow: isCancelled ? 'none' : `0 0 30px ${styleMatch.glow}`
+          border: `2px solid ${brandConfig.color}44`,
+          boxShadow: isCancelled ? 'none' : `0 0 30px ${brandConfig.glow}`
         }}>
           {/* Brand Logo */}
           <img 
-            src={logoSrc}
+            src={brandConfig.logo}
             alt={currentBrand}
             style={{
               height: '28px',
@@ -349,7 +399,7 @@ export function NotificationToast({ booking, onDismiss }) {
           />
           {/* Brand Name */}
           <span style={{
-            color: styleMatch.color,
+            color: brandConfig.color,
             fontWeight: 900,
             fontSize: '18px',
             letterSpacing: '2px',
@@ -368,13 +418,15 @@ export function NotificationToast({ booking, onDismiss }) {
           margin: '4px 0'
         }} />
 
-        {/* Footer Info Grid */}
+        {/* ═══════════════════════════════════════════════════════
+            FOOTER GRID: Location + STATUS
+            ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '12px'
         }}>
-          {/* Location */}
+          {/* ── Location (uses BRAND color for icon) ──────────── */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -384,14 +436,21 @@ export function NotificationToast({ booking, onDismiss }) {
             borderRadius: '14px',
             border: '1px solid rgba(255,255,255,0.06)'
           }}>
-            <MapPin size={18} style={{ color: styleMatch.color, opacity: 0.8 }} />
+            <MapPin size={18} style={{ color: brandConfig.color, opacity: 0.8 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Location</span>
-              <span style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: 700 }}>{booking?.country || 'Global'}</span>
+              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                Location
+              </span>
+              <span style={{ fontSize: '15px', color: '#e2e8f0', fontWeight: 700 }}>
+                {booking?.country || 'Global'}
+              </span>
             </div>
           </div>
 
-          {/* STATUS (with real status color) */}
+          {/* ═════════════════════════════════════════════════════
+              STATUS — USES STATUS COLOR (green/red/blue)
+              NOT the brand color!
+              ═════════════════════════════════════════════════════ */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -409,8 +468,20 @@ export function NotificationToast({ booking, onDismiss }) {
               boxShadow: `0 0 10px ${statusConfig.dot}`
             }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-              <span style={{ fontSize: '10px', color: statusConfig.label, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</span>
-              <span style={{ fontSize: '15px', color: statusConfig.text, fontWeight: 800 }}>
+              <span style={{ 
+                fontSize: '10px', 
+                color: statusConfig.text + '88', 
+                fontWeight: 600, 
+                textTransform: 'uppercase', 
+                letterSpacing: '0.05em' 
+              }}>
+                Status
+              </span>
+              <span style={{ 
+                fontSize: '15px', 
+                color: statusConfig.text, 
+                fontWeight: 800 
+              }}>
                 {booking?.status || 'Confirmed'}
               </span>
             </div>
