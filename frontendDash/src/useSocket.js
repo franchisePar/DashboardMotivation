@@ -53,7 +53,6 @@ export function useSocket() {
         timestamp,
       }
       setNewBookings(prev => [notif, ...prev].slice(0, 5))
-      // Auto-dismiss after 8s
       setTimeout(() => clearNewBooking(notif.id), 8000)
     })
 
