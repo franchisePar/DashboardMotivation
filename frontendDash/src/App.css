@@ -1,221 +1,93 @@
-/* ── Root Variables ───────────────────────────────────── */
-:root {
-  --bg-void: #0b0f19;
-  --bg-panel: #111827;
-  --accent: #0ea5e9;
-  --success: #22c55e;
-  --warning: #eab308;
-  --danger: #ef4444;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --border: rgba(255, 255, 255, 0.06);
-}
-
-/* ── App Container ─────────────────────────────────────── */
+/* ── Base ───────────────────────────────────────────── */
 .app-container {
-  width: 100%;
-  min-height: 100vh; /* ✅ min-height au lieu de height */
+  width: 100vw;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-void);
-  /* ❌ SUPPRIMÉ: overflow: hidden */
-  overflow-x: hidden;
-  overflow-y: auto; /* ✅ scroll si nécessaire */
-  padding: 1.5vh 2vw;
-  box-sizing: border-box;
+  background: var(--bg-void, #0b0f19);
+  overflow: hidden; /* pas de scroll global */
 }
 
-/* ── App Main ─────────────────────────────────────────── */
+/* ── Header ───────────────────────────────────────────── */
+.dash-header {
+  flex-shrink: 0;
+  height: clamp(50px, 8vh, 70px);
+  padding: 0 2vw;
+}
+
+/* ── Main Content ─────────────────────────────────────── */
 .app-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(10px, 1.5vh, 20px); /* ✅ s'adapte à l'écran */
-  padding: clamp(12px, 2vh, 24px) clamp(16px, 2vw, 32px);
-  overflow-y: visible; /* ✅ pas de scroll caché */
-  overflow-x: hidden;
+  gap: 1.5vh;
+  padding: 1.5vh 2vw;
+  overflow: hidden; /* pas de scroll, tout doit tenir */
+  min-height: 0;
 }
 
-/* ── KPI Row ──────────────────────────────────────────── */
+/* ── KPI Row ─────────────────────────────────────────── */
 .kpi-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: clamp(10px, 1.5vw, 20px);
+  gap: 1.5vw;
   flex-shrink: 0;
+  height: 20%; /* 20% de la hauteur dispo */
+  min-height: 100px;
 }
 
 .kpi-row > * {
-  flex: 1 1 clamp(200px, 22%, 300px); /* ✅ plus flexible */
-  min-width: 200px;
+  flex: 1;
+  min-width: 0;
 }
 
-/* ── Middle Row ───────────────────────────────────────── */
+/* ── Middle Row ─────────────────────────────────────── */
 .middle-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* ✅ responsive */
-  gap: clamp(12px, 1.5vw, 20px);
-  /* ❌ SUPPRIMÉ: flex: 1 */
-  /* ❌ SUPPRIMÉ: min-height: 0 */
-  min-height: fit-content; /* ✅ s'adapte au contenu */
+  display: flex;
+  gap: 1.5vw;
+  flex: 1;
+  min-height: 0;
+  height: 35%; /* 35% de la hauteur */
+}
+
+.middle-row > * {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden; /* scroll interne si besoin */
 }
 
 /* ── Bottom Row ───────────────────────────────────────── */
 .bottom-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); /* ✅ responsive */
-  gap: clamp(12px, 1.5vw, 20px);
-  /* ❌ SUPPRIMÉ: flex: 1 */
-  /* ❌ SUPPRIMÉ: min-height: 0 */
-  min-height: fit-content; /* ✅ s'adapte au contenu */
+  display: flex;
+  gap: 1.5vw;
+  flex: 1;
+  min-height: 0;
+  height: 35%; /* 35% de la hauteur */
 }
 
-/* ── Toast Container ──────────────────────────────────── */
+.bottom-row > * {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── Toast ──────────────────────────────────────────── */
 .toast-container {
   position: fixed;
-  bottom: clamp(10px, 2vh, 24px);
-  right: clamp(10px, 2vw, 24px);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  bottom: 2vh;
+  right: 2vw;
   z-index: 1000;
-  pointer-events: none;
-  max-width: 90vw;
 }
 
-.toast-container > * {
-  pointer-events: auto;
-}
-
-/* ── Responsive: Grand écran (TV, 1440px+) ────────────── */
-@media (min-width: 1440px) {
+/* ── Responsive simple : si écran trop petit, empile ── */
+@media (max-width: 900px) {
+  .kpi-row,
+  .middle-row,
+  .bottom-row {
+    flex-direction: column;
+    height: auto;
+  }
+  
   .app-container {
-    padding: 2vh 3vw;
-  }
-  
-  .app-main {
-    gap: 24px;
-    padding: 24px 40px 32px;
-  }
-  
-  .kpi-row > * {
-    flex: 1 1 280px;
-  }
-  
-  .middle-row {
-    grid-template-columns: 1.2fr 1fr; /* ✅ BrandStats plus grand */
-  }
-  
-  .bottom-row {
-    grid-template-columns: 1.3fr 1fr; /* ✅ HourlyChart plus grand */
-  }
-}
-
-/* ── Responsive: PC standard (1024px - 1439px) ──────── */
-@media (max-width: 1439px) {
-  .middle-row {
-    grid-template-columns: 1fr 1fr;
-  }
-  
-  .bottom-row {
-    grid-template-columns: 1.2fr 1fr;
-  }
-}
-
-/* ── Responsive: Tablette (768px - 1023px) ─────────────── */
-@media (max-width: 1023px) {
-  .kpi-row > * {
-    flex: 1 1 45%; /* ✅ 2 par ligne */
-    min-width: 280px;
-  }
-  
-  .middle-row,
-  .bottom-row {
-    grid-template-columns: 1fr; /* ✅ empilé */
-  }
-}
-
-/* ── Responsive: Mobile (< 768px) ────────────────────── */
-@media (max-width: 767px) {
-  .app-container {
-    padding: 8px;
-  }
-  
-  .app-main {
-    padding: 10px;
-    gap: 12px;
-  }
-  
-  .kpi-row > * {
-    flex: 1 1 100%; /* ✅ 1 par ligne */
-    min-width: unset;
-  }
-  
-  .middle-row,
-  .bottom-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .toast-container {
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    align-items: center;
-  }
-}
-
-/* ── Responsive: Très petit mobile (< 480px) ─────────── */
-@media (max-width: 479px) {
-  .kpi-row {
-    gap: 8px;
-  }
-  
-  .kpi-row > * {
-    padding: 12px;
-  }
-  
-  .middle-row,
-  .bottom-row {
-    gap: 10px;
-  }
-}
-/* ── Fix pour les panels qui se coupent ───────────────── */
-
-.middle-row > *,
-.bottom-row > * {
-  min-height: 300px; /* ✅ hauteur minimum */
-  max-height: 45vh; /* ✅ limite pour pas dépasser */
-  overflow-y: auto; /* ✅ scroll interne si nécessaire */
-}
-
-/* BrandStats et CountryLeaderboard */
-.brand-stats,
-.country-leaderboard {
-  display: flex;
-  flex-direction: column;
-}
-
-/* HourlyChart et RecentBookings */
-.hourly-chart,
-.recent-bookings {
-  display: flex;
-  flex-direction: column;
-  min-height: 250px;
-}
-
-/* Pour les très grands écrans, plus de place */
-@media (min-width: 1440px) {
-  .middle-row > *,
-  .bottom-row > * {
-    max-height: 50vh;
-  }
-}
-
-/* Pour les petits écrans, tout empiler */
-@media (max-width: 1023px) {
-  .middle-row > *,
-  .bottom-row > * {
-    max-height: none; /* ✅ pas de limite, scroll global */
-    min-height: 200px;
+    overflow-y: auto; /* scroll sur petit écran */
   }
 }
