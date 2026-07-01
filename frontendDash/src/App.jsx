@@ -130,8 +130,14 @@ function App() {
   const totalReservations = totalFromMeta || Object.values(brandStats).reduce((sum, b) => sum + b.totalBookings, 0)
   const todayCount = stats.totalBookings || Object.values(brandStats).reduce((sum, b) => sum + b.todayBookings, 0)
 
-  const trend = todayCount > 80 ? 'up' : 'down'
-  const trendValue = todayCount > 80 ? '+12%' : '-5%'
+ const yesterdayCount = data?.yesterdayStats?.totalBookings || 0
+const trendCalc = yesterdayCount > 0 
+  ? ((todayCount - yesterdayCount) / yesterdayCount) * 100 
+  : 0
+
+const trend = trendCalc >= 0 ? 'up' : 'down'
+const trendValue = `${trendCalc >= 0 ? '+' : ''}${Math.round(trendCalc)}%`
+
 
   if (loading && !data) {
     return (
