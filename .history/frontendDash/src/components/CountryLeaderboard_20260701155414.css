@@ -1,0 +1,58 @@
+.country-leaderboard {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5vh 1.5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+  height: 100%;
+  overflow: hidden;
+}
+
+.country-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;               /* ✅ plus petit */
+  flex: 1;
+  overflow-y: auto;
+}
+
+.country-row {
+  display: grid;
+  grid-template-columns: 24px 28px 1fr 50px;
+  align-items: center;
+  gap: 0.6vw;
+  padding: 0.5vh 0.6vw;     /* ✅ compact */
+  min-height: 0;
+}
+
+.country-flag {
+  font-size: clamp(14px, 1.8vh, 20px);
+}
+
+.country-name {
+  font-size: clamp(11px, 1.2vh, 14px);
+}
+
+.country-bar-track {
+  height: clamp(3px, 0.5vh, 6px);
+}
+
+.country-count {
+  font-size: clamp(11px, 1.2vh, 14px);
+}
+
+/* Flag image */
+.country-leaderboard__flag {
+  width: clamp(24px, 2.5vw, 32px);
+  height: clamp(18px, 2vh, 24px);
+}
+
+.country-leaderboard__name {
+  font-size: clamp(11px, 1.2vh, 14px);
+}
+
+.country-leaderboard__count {
+  font-size: clamp(12px, 1.3vh, 15px);
+}

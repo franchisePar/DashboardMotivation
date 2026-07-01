@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-void, #0b0f19);
-  overflow: hidden;
+  overflow: hidden; /* pas de scroll global */
 }
 
 /* ── Header ───────────────────────────────────────────── */
@@ -22,7 +22,7 @@
   flex-direction: column;
   gap: 1.5vh;
   padding: 1.5vh 2vw;
-  overflow: hidden;
+  overflow: hidden; /* pas de scroll, tout doit tenir */
   min-height: 0;
 }
 
@@ -31,7 +31,8 @@
   display: flex;
   gap: 1.5vw;
   flex-shrink: 0;
-  /* ❌ PAS DE HEIGHT FIXE */
+  height: 20%; /* 20% de la hauteur dispo */
+  min-height: 100px;
 }
 
 .kpi-row > * {
@@ -43,24 +44,24 @@
 .middle-row {
   display: flex;
   gap: 1.5vw;
-  flex: 1; /* ✅ prend l'espace restant */
+  flex: 1;
   min-height: 0;
-  /* ❌ PAS DE HEIGHT FIXE */
+  height: 35%; /* 35% de la hauteur */
 }
 
 .middle-row > * {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow: hidden; /* scroll interne si besoin */
 }
 
 /* ── Bottom Row ───────────────────────────────────────── */
 .bottom-row {
   display: flex;
   gap: 1.5vw;
-  flex: 1; /* ✅ prend l'espace restant */
+  flex: 1;
   min-height: 0;
-  /* ❌ PAS DE HEIGHT FIXE */
+  height: 35%; /* 35% de la hauteur */
 }
 
 .bottom-row > * {
@@ -77,15 +78,16 @@
   z-index: 1000;
 }
 
-/* ── Responsive : petit écran ─────────────────────── */
+/* ── Responsive simple : si écran trop petit, empile ── */
 @media (max-width: 900px) {
-  .app-container {
-    overflow-y: auto;
-  }
-  
   .kpi-row,
   .middle-row,
   .bottom-row {
     flex-direction: column;
+    height: auto;
+  }
+  
+  .app-container {
+    overflow-y: auto; /* scroll sur petit écran */
   }
 }

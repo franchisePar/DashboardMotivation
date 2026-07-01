@@ -87,10 +87,3 @@
 }
 .stat-card__trend.up   { color: var(--success); }
 .stat-card__trend.down { color: var(--danger); }
-.brand-stats,
-.country-leaderboard,
-.hourly-chart,
-.recent-bookings {
-  overflow-y: auto; /* ✅ scroll interne si le contenu dépasse */
-  height: 100%; /* ✅ prend toute la hauteur du parent */
-}

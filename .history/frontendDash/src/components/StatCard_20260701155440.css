@@ -1,0 +1,30 @@
+.stat-card {
+  padding: 1.5vh 1.5vw;     /* ✅ vh/vw */
+  gap: 0.8vh;
+  --card-color: var(--accent);
+}
+
+.stat-card__label {
+  font-size: clamp(9px, 1vh, 12px);
+}
+
+.stat-card__value {
+  font-size: clamp(24px, 4vh, 48px);   /* ✅ s'adapte */
+}
+
+.stat-card--large .stat-card__value {
+  font-size: clamp(32px, 5vh, 64px);
+}
+
+.stat-card__sub {
+  font-size: clamp(10px, 1.1vh, 13px);
+}
+
+.stat-card__trend {
+  font-size: clamp(9px, 1vh, 11px);
+}
+
+.stat-card__icon svg {
+  width: clamp(16px, 2vh, 24px);
+  height: clamp(16px, 2vh, 24px);
+}

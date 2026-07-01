@@ -1,0 +1,75 @@
+.dash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5vw;          /* ✅ vw au lieu de 24px */
+  height: 7vh;             /* ✅ vh au lieu de 60px */
+  min-height: 50px;
+  max-height: 70px;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  gap: 1vw;
+  flex-shrink: 0;
+}
+
+.dash-header__left {
+  display: flex;
+  align-items: center;
+  gap: 0.8vw;
+  flex: 1;
+}
+
+.dash-header__logo {
+  width: 3vh;              /* ✅ s'adapte */
+  height: 3vh;
+  min-width: 30px;
+  min-height: 30px;
+}
+
+.dash-header__brand {
+  font-size: clamp(12px, 1.2vw, 16px);  /* ✅ clamp */
+}
+
+.dash-header__sub {
+  font-size: clamp(9px, 0.8vw, 12px);
+}
+
+/* Brand logos */
+.dash-header__brand-item {
+  height: 4.5vh;           /* ✅ vh */
+  min-height: 35px;
+  width: auto;
+  aspect-ratio: 16/9;
+}
+
+/* Clock */
+.dash-header__clock {
+  font-size: clamp(18px, 2.5vw, 28px);
+}
+
+.dash-header__date {
+  font-size: clamp(10px, 1vw, 13px);
+}
+
+/* Right side */
+.dash-header__right {
+  gap: 0.8vw;
+}
+
+.dash-header__status {
+  padding: 0.4vh 0.8vw;
+  font-size: clamp(10px, 0.9vw, 12px);
+}
+
+.dash-header__btn {
+  width: 3vh;
+  height: 3vh;
+  min-width: 28px;
+  min-height: 28px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dash-header__brands { display: none; }
+  .dash-header__clock { font-size: 18px; }
+}

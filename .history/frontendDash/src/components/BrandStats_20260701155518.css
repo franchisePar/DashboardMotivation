@@ -103,10 +103,3 @@
   min-width: 56px;
   text-align: right;
 }
-.brand-stats,
-.country-leaderboard,
-.hourly-chart,
-.recent-bookings {
-  overflow-y: auto; /* ✅ scroll interne si le contenu dépasse */
-  height: 100%; /* ✅ prend toute la hauteur du parent */
-}

@@ -1,0 +1,157 @@
+/* ── Root Variables ───────────────────────────────────── */
+:root {
+  --bg-void: #0b0f19;
+  --bg-panel: #111827;
+  --accent: #0ea5e9;
+  --success: #22c55e;
+  --warning: #eab308;
+  --danger: #ef4444;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border: rgba(255, 255, 255, 0.06);
+}
+
+/* ── App Container ─────────────────────────────────────── */
+.app-container {
+  width: 100vw;
+  height: 100vh; /* ✅ exactement la taille de l'écran */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-void);
+  overflow: hidden; /* ✅ pas de scroll global */
+  padding: 1vh 1.5vw;
+  box-sizing: border-box;
+}
+
+/* ── App Main ─────────────────────────────────────────── */
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh; /* ✅ petit gap en vh */
+  padding: 1vh 1.5vw;
+  overflow: hidden; /* ✅ pas de scroll */
+  min-height: 0; /* ✅ permet aux enfants de shrink */
+}
+
+/* ── KPI Row ──────────────────────────────────────────── */
+.kpi-row {
+  display: flex;
+  flex-wrap: nowrap; /* ✅ pas de wrap, toujours sur une ligne */
+  gap: 1.5vw;
+  flex-shrink: 0;
+  height: 18vh; /* ✅ hauteur fixe en vh */
+  min-height: 120px;
+}
+
+.kpi-row > * {
+  flex: 1 1 0; /* ✅ partagent l'espace équalement */
+  min-width: 0; /* ✅ permet de shrink */
+  overflow: hidden;
+}
+
+/* ── Middle Row ───────────────────────────────────────── */
+.middle-row {
+  display: flex; /* ✅ flex au lieu de grid */
+  gap: 1.5vw;
+  flex: 1; /* ✅ prend l'espace restant */
+  min-height: 0;
+  height: 32vh; /* ✅ hauteur proportionnelle */
+}
+
+.middle-row > * {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Bottom Row ───────────────────────────────────────── */
+.bottom-row {
+  display: flex;
+  gap: 1.5vw;
+  flex: 1;
+  min-height: 0;
+  height: 32vh; /* ✅ même hauteur que middle */
+}
+
+.bottom-row > * {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Toast Container ──────────────────────────────────── */
+.toast-container {
+  position: fixed;
+  bottom: 2vh;
+  right: 2vw;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.toast-container > * {
+  pointer-events: auto;
+}
+
+/* ── Responsive: Très grand écran (TV 1920x1080+) ─────── */
+@media (min-width: 1920px) {
+  .app-container {
+    padding: 1.5vh 2vw;
+  }
+  
+  .kpi-row {
+    height: 20vh;
+  }
+  
+  .middle-row,
+  .bottom-row {
+    height: 35vh;
+  }
+}
+
+/* ── Responsive: PC portable (1366x768) ──────────────── */
+@media (max-width: 1366px) {
+  .kpi-row {
+    height: 16vh;
+    min-height: 100px;
+  }
+  
+  .middle-row,
+  .bottom-row {
+    height: 30vh;
+  }
+}
+
+/* ── Responsive: Petit écran (< 1024px) ──────────────── */
+@media (max-width: 1024px) {
+  .kpi-row {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 80px;
+  }
+  
+  .kpi-row > * {
+    flex: 1 1 45%;
+  }
+  
+  .middle-row,
+  .bottom-row {
+    flex-direction: column;
+    height: auto;
+  }
+}
+
+/* ── Responsive: Mobile (< 768px) ────────────────────── */
+@media (max-width: 768px) {
+  .app-container {
+    overflow-y: auto; /* ✅ scroll sur mobile */
+  }
+  
+  .kpi-row > * {
+    flex: 1 1 100%;
+  }
+}
