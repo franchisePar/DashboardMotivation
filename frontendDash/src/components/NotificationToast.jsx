@@ -5,32 +5,31 @@ import { X, Sparkles, MapPin } from 'lucide-react'
 // CONFIGS
 // ═══════════════════════════════════════════════════════════════
 
-// Brand configs → logo + color for the BRAND badge
 const BRAND_CONFIGS = {
   UNITED: { 
     color: '#0f27a2', 
     glow: 'rgba(15, 39, 162, 0.5)',
-    logo: '/assets/logos/United_Logo_BG.png'   // ← update with your real path
+    logo: '/assets/logos/United_Logo_BG.png'
   },
   MOVIS:  { 
     color: '#f94231', 
     glow: 'rgba(249, 66, 49, 0.5)',
-    logo: '/assets/logos/Movis_Logo_BG.png'    // ← update with your real path
+    logo: '/assets/logos/Movis_Logo_BG.png'
   },
   DRIVO:  { 
     color: '#c8fa1b', 
     glow: 'rgba(200, 250, 27, 0.5)',
-    logo: '/assets/logos/Drivo_Logo_BG.png'   // ← update with your real path
+    logo: '/assets/logos/Drivo_Logo_BG.png'
   }
 }
 
-// Status configs → color for the STATUS badge only
+// Status colors — independent from brand
 const STATUS_CONFIGS = {
-  CONFIRMED:       { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
-  CANCELLED:       { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
-  CANCELED:        { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
-  PENDING:         { bg: 'rgba(234, 179, 8, 0.12)',  border: 'rgba(234, 179, 8, 0.3)',  dot: '#eab308', text: '#eab308' },
-  'NEW BOOKING':   { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
+  CONFIRMED:         { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
+  CANCELLED:         { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
+  CANCELED:          { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
+  PENDING:           { bg: 'rgba(234, 179, 8, 0.12)',  border: 'rgba(234, 179, 8, 0.3)',  dot: '#eab308', text: '#eab308' },
+  'NEW BOOKING':     { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
   'NEW RESERVATION': { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
 }
 
@@ -41,7 +40,10 @@ const BW_COLORS = ['#888888', '#aaaaaa', '#cccccc', '#666666', '#999999', '#bbbb
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
 
-function getBrandConfig(brand) {
+function getBrandConfig(brand, isCancelled) {
+  if (isCancelled) {
+    return { color: '#888888', glow: 'rgba(128, 128, 128, 0.3)' }
+  }
   const b = (brand || 'UNITED').toString().toUpperCase().trim()
   return BRAND_CONFIGS[b] || BRAND_CONFIGS.UNITED
 }
@@ -60,14 +62,15 @@ export function NotificationToast({ booking, onDismiss }) {
   const canvasRef = useRef(null)
 
   // ── Parse data ──────────────────────────────────────────────
-  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
   const rawStatus = (booking?.status || 'CONFIRMED').toString().toUpperCase().trim()
+  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
+  
+  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
   
   // ── Get configs ─────────────────────────────────────────────
-  const brandConfig = getBrandConfig(currentBrand)
+  const brandConfig = getBrandConfig(currentBrand, isCancelled)
   const statusConfig = getStatusConfig(rawStatus)
   
-  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
   const confettiColors = isCancelled ? BW_COLORS : CONFETTI_COLORS
 
   // ── Style tokens ────────────────────────────────────────────
@@ -86,18 +89,14 @@ export function NotificationToast({ booking, onDismiss }) {
   // ════════════════════════════════════════════════════════════
   
   useEffect(() => {
-    // Audio chime (skip if cancelled)
     if (!isCancelled) {
       try {
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav')
         audio.volume = 0.25
         audio.play().catch(() => {})
-      } catch (e) {
-        // Audio blocked
-      }
+      } catch (e) {}
     }
 
-    // Canvas confetti
     const canvas = canvasRef.current
     let animationFrameId
     let isActive = true
@@ -154,7 +153,6 @@ export function NotificationToast({ booking, onDismiss }) {
     }
   }, [booking, isCancelled, confettiColors])
 
-  // Auto-dismiss
   useEffect(() => {
     const timer = setTimeout(onDismiss, 9000)
     return () => clearTimeout(timer)
@@ -235,7 +233,7 @@ export function NotificationToast({ booking, onDismiss }) {
           }
         `}} />
 
-        {/* Glow Ring (uses BRAND color) */}
+        {/* Glow Ring */}
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -369,8 +367,8 @@ export function NotificationToast({ booking, onDismiss }) {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            BRAND BADGE (Logo + Brand Name) — ALWAYS SHOWS BRAND
-            Uses BRAND color (blue/red/lime)
+            BRAND BADGE: Logo + Brand Name
+            Uses BRAND color (blue/red/lime) or grey if cancelled
             ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'flex',
@@ -419,14 +417,14 @@ export function NotificationToast({ booking, onDismiss }) {
         }} />
 
         {/* ═══════════════════════════════════════════════════════
-            FOOTER GRID: Location + STATUS
+            FOOTER GRID: Location + Status
             ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '12px'
         }}>
-          {/* ── Location (uses BRAND color for icon) ──────────── */}
+          {/* ── Location (uses BRAND color) ───────────────────── */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -448,8 +446,8 @@ export function NotificationToast({ booking, onDismiss }) {
           </div>
 
           {/* ═════════════════════════════════════════════════════
-              STATUS — USES STATUS COLOR (green/red/blue)
-              NOT the brand color!
+              STATUS — Uses STATUS color (green/blue/red)
+              Independent from brand color!
               ═════════════════════════════════════════════════════ */}
           <div style={{
             display: 'flex',
