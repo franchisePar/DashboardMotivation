@@ -179,3 +179,43 @@
     gap: 10px;
   }
 }
+/* ── Fix pour les panels qui se coupent ───────────────── */
+
+.middle-row > *,
+.bottom-row > * {
+  min-height: 300px; /* ✅ hauteur minimum */
+  max-height: 45vh; /* ✅ limite pour pas dépasser */
+  overflow-y: auto; /* ✅ scroll interne si nécessaire */
+}
+
+/* BrandStats et CountryLeaderboard */
+.brand-stats,
+.country-leaderboard {
+  display: flex;
+  flex-direction: column;
+}
+
+/* HourlyChart et RecentBookings */
+.hourly-chart,
+.recent-bookings {
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+}
+
+/* Pour les très grands écrans, plus de place */
+@media (min-width: 1440px) {
+  .middle-row > *,
+  .bottom-row > * {
+    max-height: 50vh;
+  }
+}
+
+/* Pour les petits écrans, tout empiler */
+@media (max-width: 1023px) {
+  .middle-row > *,
+  .bottom-row > * {
+    max-height: none; /* ✅ pas de limite, scroll global */
+    min-height: 200px;
+  }
+}
