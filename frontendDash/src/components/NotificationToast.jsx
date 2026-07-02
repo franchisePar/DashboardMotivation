@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { X, Sparkles, MapPin } from 'lucide-react'
 
 // ═══════════════════════════════════════════════════════════════
@@ -32,6 +32,8 @@ const STATUS_CONFIGS = {
 const CONFETTI_COLORS = ['#0f27a2', '#f94231', '#c8fa1b', '#eab308', '#22c55e', '#a855f7']
 const BW_COLORS = ['#888888', '#aaaaaa', '#cccccc', '#666666', '#999999', '#bbbbbb']
 
+const BRAND_NAMES = ['UNITED', 'MOVIS', 'DRIVO']
+
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
@@ -51,27 +53,20 @@ function getStatusConfig(status) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// COMPONENT
+// SINGLE TOAST COMPONENT (handles one booking)
 // ═══════════════════════════════════════════════════════════════
 
-export function NotificationToast({ booking, onDismiss }) {
+function SingleToast({ booking, onDismiss }) {
   const canvasRef = useRef(null)
 
-  // ── GUARD: Don't render if no booking ───────────────────────
-  if (!booking) {
-    console.log('NotificationToast: no booking prop, skipping render')
-    return null
-  }
-
   // ── Parse data ──────────────────────────────────────────────
-  const currentBrand = (booking.brand || 'UNITED').toString().toUpperCase().trim()
+  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
   
-  // Fix status: if it contains brand name, default to CONFIRMED
-  let rawStatus = (booking.status || 'CONFIRMED').toString().toUpperCase().trim()
-  const BRAND_NAMES = ['UNITED', 'MOVIS', 'DRIVO']
+  // Fix status: if it contains brand name, it's wrong data
+  let rawStatus = (booking?.status || 'CONFIRMED').toString().toUpperCase().trim()
   
   if (BRAND_NAMES.includes(rawStatus)) {
-    console.warn('Status contains brand name:', rawStatus, '- defaulting to CONFIRMED')
+    console.warn('🐛 Status is brand name:', rawStatus, 'booking:', booking)
     rawStatus = 'CONFIRMED'
   }
   
@@ -94,10 +89,7 @@ export function NotificationToast({ booking, onDismiss }) {
     ? '0 0 30px rgba(128,128,128,0.2), 0 16px 48px rgba(0,0,0,0.8)' 
     : `0 0 60px ${brandConfig.glow}, 0 24px 64px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05)`
 
-  // ════════════════════════════════════════════════════════════
-  // EFFECTS
-  // ════════════════════════════════════════════════════════════
-  
+  // ── Effects ─────────────────────────────────────────────────
   useEffect(() => {
     if (!isCancelled) {
       try {
@@ -113,7 +105,6 @@ export function NotificationToast({ booking, onDismiss }) {
 
     if (canvas) {
       const ctx = canvas.getContext('2d')
-      
       const setSize = () => {
         canvas.width = window.innerWidth
         canvas.height = window.innerHeight
@@ -161,17 +152,14 @@ export function NotificationToast({ booking, onDismiss }) {
         cancelAnimationFrame(animationFrameId)
       }
     }
-  }, [booking, isCancelled, confettiColors])
+  }, [isCancelled, confettiColors])
 
   useEffect(() => {
     const timer = setTimeout(onDismiss, 9000)
     return () => clearTimeout(timer)
   }, [onDismiss])
 
-  // ════════════════════════════════════════════════════════════
-  // RENDER
-  // ════════════════════════════════════════════════════════════
-  
+  // ── Render ──────────────────────────────────────────────────
   return (
     <>
       <canvas
@@ -220,8 +208,7 @@ export function NotificationToast({ booking, onDismiss }) {
       >
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes backdropFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; } to { opacity: 1; }
           }
           @keyframes toastBounceIn {
             0% { transform: translate(-50%, -50%) scale(0.3) rotate(-8deg); opacity: 0; }
@@ -492,4 +479,40 @@ export function NotificationToast({ booking, onDismiss }) {
       </div>
     </>
   )
+}
+
+// ═══════════════════════════════════════════════════════════════
+// QUEUE MANAGER — Handles multiple toasts without losing any
+// ═══════════════════════════════════════════════════════════════
+
+export function NotificationToast({ booking, onDismiss }) {
+  const [queue, setQueue] = useState([])
+  const [current, setCurrent] = useState(null)
+
+  // Add new booking to queue
+  useEffect(() => {
+    if (booking) {
+      console.log('📥 Adding to queue:', booking)
+      setQueue(prev => [...prev, booking])
+    }
+  }, [booking])
+
+  // Process queue — show next toast when current finishes
+  useEffect(() => {
+    if (!current && queue.length > 0) {
+      const next = queue[0]
+      console.log('▶️ Showing toast:', next)
+      setCurrent(next)
+      setQueue(prev => prev.slice(1))
+    }
+  }, [current, queue])
+
+  const handleDismiss = () => {
+    setCurrent(null)
+    onDismiss?.()
+  }
+
+  if (!current) return null
+
+  return <SingleToast booking={current} onDismiss={handleDismiss} />
 }
