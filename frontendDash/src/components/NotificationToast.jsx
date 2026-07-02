@@ -32,8 +32,6 @@ const STATUS_CONFIGS = {
 const CONFETTI_COLORS = ['#0f27a2', '#f94231', '#c8fa1b', '#eab308', '#22c55e', '#a855f7']
 const BW_COLORS = ['#888888', '#aaaaaa', '#cccccc', '#666666', '#999999', '#bbbbbb']
 
-const BRAND_NAMES = ['UNITED', 'MOVIS', 'DRIVO']
-
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
@@ -53,23 +51,33 @@ function getStatusConfig(status) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// SINGLE TOAST COMPONENT (handles one booking)
+// SINGLE TOAST
 // ═══════════════════════════════════════════════════════════════
 
 function SingleToast({ booking, onDismiss }) {
   const canvasRef = useRef(null)
 
-  // ── Parse data ──────────────────────────────────────────────
-  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
-  
-  // Fix status: if it contains brand name, it's wrong data
+  // ── Parse & FIX data ──────────────────────────────────────
+  let rawBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
   let rawStatus = (booking?.status || 'CONFIRMED').toString().toUpperCase().trim()
   
-  if (BRAND_NAMES.includes(rawStatus)) {
-    console.warn('🐛 Status is brand name:', rawStatus, 'booking:', booking)
-    rawStatus = 'CONFIRMED'
+  // Final protection: if fields are still swapped, fix them
+  const isBrandActuallyBrand = ['UNITED', 'MOVIS', 'DRIVO'].includes(rawBrand)
+  const isStatusActuallyStatus = ['CONFIRMED', 'CANCELED', 'CANCELLED'].includes(rawStatus)
+  
+  if (!isBrandActuallyBrand && ['UNITED', 'MOVIS', 'DRIVO'].includes(rawStatus)) {
+    const temp = rawBrand
+    rawBrand = rawStatus
+    rawStatus = temp
   }
   
+  if (!isStatusActuallyStatus && ['CONFIRMED', 'CANCELED', 'CANCELLED'].includes(rawBrand)) {
+    const temp = rawStatus
+    rawStatus = rawBrand
+    rawBrand = temp
+  }
+  
+  const currentBrand = rawBrand
   const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
   
   // ── Get configs ─────────────────────────────────────────────
@@ -482,7 +490,7 @@ function SingleToast({ booking, onDismiss }) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// QUEUE MANAGER — Handles multiple toasts without losing any
+// QUEUE MANAGER — Shows multiple toasts one by one
 // ═══════════════════════════════════════════════════════════════
 
 export function NotificationToast({ booking, onDismiss }) {
@@ -492,16 +500,14 @@ export function NotificationToast({ booking, onDismiss }) {
   // Add new booking to queue
   useEffect(() => {
     if (booking) {
-      console.log('📥 Adding to queue:', booking)
       setQueue(prev => [...prev, booking])
     }
   }, [booking])
 
-  // Process queue — show next toast when current finishes
+  // Process queue
   useEffect(() => {
     if (!current && queue.length > 0) {
       const next = queue[0]
-      console.log('▶️ Showing toast:', next)
       setCurrent(next)
       setQueue(prev => prev.slice(1))
     }
