@@ -23,7 +23,6 @@ const BRAND_CONFIGS = {
   }
 }
 
-// Status colors — CONFIRMED = green, CANCELLED = red
 const STATUS_CONFIGS = {
   CONFIRMED: { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
   CANCELLED: { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
@@ -58,11 +57,25 @@ function getStatusConfig(status) {
 export function NotificationToast({ booking, onDismiss }) {
   const canvasRef = useRef(null)
 
+  // ── GUARD: Don't render if no booking ───────────────────────
+  if (!booking) {
+    console.log('NotificationToast: no booking prop, skipping render')
+    return null
+  }
+
   // ── Parse data ──────────────────────────────────────────────
-  const rawStatus = (booking?.status || 'CONFIRMED').toString().toUpperCase().trim()
-  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
+  const currentBrand = (booking.brand || 'UNITED').toString().toUpperCase().trim()
   
-  const currentBrand = (booking?.brand || 'UNITED').toString().toUpperCase().trim()
+  // Fix status: if it contains brand name, default to CONFIRMED
+  let rawStatus = (booking.status || 'CONFIRMED').toString().toUpperCase().trim()
+  const BRAND_NAMES = ['UNITED', 'MOVIS', 'DRIVO']
+  
+  if (BRAND_NAMES.includes(rawStatus)) {
+    console.warn('Status contains brand name:', rawStatus, '- defaulting to CONFIRMED')
+    rawStatus = 'CONFIRMED'
+  }
+  
+  const isCancelled = rawStatus === 'CANCELLED' || rawStatus === 'CANCELED'
   
   // ── Get configs ─────────────────────────────────────────────
   const brandConfig = getBrandConfig(currentBrand, isCancelled)
@@ -161,7 +174,6 @@ export function NotificationToast({ booking, onDismiss }) {
   
   return (
     <>
-      {/* Confetti Canvas */}
       <canvas
         ref={canvasRef}
         style={{
@@ -175,7 +187,6 @@ export function NotificationToast({ booking, onDismiss }) {
         }}
       />
 
-      {/* Backdrop */}
       <div style={{
         position: 'fixed',
         inset: 0,
@@ -185,7 +196,6 @@ export function NotificationToast({ booking, onDismiss }) {
         animation: 'backdropFadeIn 0.4s ease-out'
       }} />
 
-      {/* Toast Card */}
       <div 
         style={{
           position: 'fixed',
@@ -208,7 +218,6 @@ export function NotificationToast({ booking, onDismiss }) {
           animation: 'toastBounceIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)'
         }}
       >
-        {/* Keyframe Animations */}
         <style dangerouslySetInnerHTML={{__html: `
           @keyframes backdropFadeIn {
             from { opacity: 0; }
@@ -273,7 +282,7 @@ export function NotificationToast({ booking, onDismiss }) {
           {isCancelled ? '⚠️' : '✨'}
         </div>
 
-        {/* ── Close Button ────────────────────────────────────── */}
+        {/* Close Button */}
         <button 
           onClick={onDismiss} 
           style={{
@@ -303,7 +312,7 @@ export function NotificationToast({ booking, onDismiss }) {
           <X size={20} />
         </button>
 
-        {/* ── Header: Sparkle + Title ─────────────────────────── */}
+        {/* Header */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -334,7 +343,7 @@ export function NotificationToast({ booking, onDismiss }) {
           </span>
         </div>
 
-        {/* ── Reservation Number ──────────────────────────────── */}
+        {/* Reservation Number */}
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -363,10 +372,7 @@ export function NotificationToast({ booking, onDismiss }) {
           </span>
         </div>
 
-        {/* ═══════════════════════════════════════════════════════
-            BRAND LOGO ONLY (no status text here!)
-            Centered, shows ONLY the brand logo
-            ═══════════════════════════════════════════════════════ */}
+        {/* BRAND LOGO ONLY */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
@@ -383,12 +389,10 @@ export function NotificationToast({ booking, onDismiss }) {
               filter: isCancelled ? 'grayscale(1) brightness(0.7)' : 'none'
             }}
             onError={(e) => {
-              // Fallback to text if logo fails
               e.target.style.display = 'none'
               e.target.nextSibling.style.display = 'flex'
             }}
           />
-          {/* Fallback text if image fails */}
           <span style={{
             display: 'none',
             color: brandConfig.color,
@@ -410,15 +414,13 @@ export function NotificationToast({ booking, onDismiss }) {
           margin: '4px 0'
         }} />
 
-        {/* ═══════════════════════════════════════════════════════
-            FOOTER GRID: Location + STATUS
-            ═══════════════════════════════════════════════════════ */}
+        {/* Footer Grid: Location + Status */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
           gap: '12px'
         }}>
-          {/* ── Location (uses BRAND color) ───────────────────── */}
+          {/* Location */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -439,10 +441,7 @@ export function NotificationToast({ booking, onDismiss }) {
             </div>
           </div>
 
-          {/* ═════════════════════════════════════════════════════
-              STATUS — Shows CONFIRMED (green) or CANCELLED (red)
-              NOT the brand!
-              ═════════════════════════════════════════════════════ */}
+          {/* STATUS */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
@@ -474,7 +473,7 @@ export function NotificationToast({ booking, onDismiss }) {
                 color: statusConfig.text, 
                 fontWeight: 800 
               }}>
-                {booking?.status || 'Confirmed'}
+                {rawStatus}
               </span>
             </div>
           </div>
