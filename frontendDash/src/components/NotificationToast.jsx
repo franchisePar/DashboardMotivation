@@ -23,14 +23,11 @@ const BRAND_CONFIGS = {
   }
 }
 
-// Status colors — independent from brand
+// Status colors — CONFIRMED = green, CANCELLED = red
 const STATUS_CONFIGS = {
-  CONFIRMED:         { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
-  CANCELLED:         { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
-  CANCELED:          { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
-  PENDING:           { bg: 'rgba(234, 179, 8, 0.12)',  border: 'rgba(234, 179, 8, 0.3)',  dot: '#eab308', text: '#eab308' },
-  'NEW BOOKING':     { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
-  'NEW RESERVATION': { bg: 'rgba(14, 165, 233, 0.12)', border: 'rgba(14, 165, 233, 0.3)', dot: '#0ea5e9', text: '#0ea5e9' },
+  CONFIRMED: { bg: 'rgba(34, 197, 94, 0.12)',  border: 'rgba(34, 197, 94, 0.3)',  dot: '#22c55e', text: '#22c55e' },
+  CANCELLED: { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
+  CANCELED:  { bg: 'rgba(239, 68, 68, 0.12)',  border: 'rgba(239, 68, 68, 0.3)',  dot: '#ef4444', text: '#ef4444' },
 }
 
 const CONFETTI_COLORS = ['#0f27a2', '#f94231', '#c8fa1b', '#eab308', '#22c55e', '#a855f7']
@@ -367,39 +364,36 @@ export function NotificationToast({ booking, onDismiss }) {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            BRAND BADGE: Logo + Brand Name
-            Uses BRAND color (blue/red/lime) or grey if cancelled
+            BRAND LOGO ONLY (no status text here!)
+            Centered, shows ONLY the brand logo
             ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '12px',
-          background: `${brandConfig.color}18`,
-          padding: '12px 28px',
-          borderRadius: '14px',
-          border: `2px solid ${brandConfig.color}44`,
-          boxShadow: isCancelled ? 'none' : `0 0 30px ${brandConfig.glow}`
+          padding: '8px 0'
         }}>
-          {/* Brand Logo */}
           <img 
             src={brandConfig.logo}
             alt={currentBrand}
             style={{
-              height: '28px',
+              height: '40px',
               width: 'auto',
               objectFit: 'contain',
               filter: isCancelled ? 'grayscale(1) brightness(0.7)' : 'none'
             }}
             onError={(e) => {
+              // Fallback to text if logo fails
               e.target.style.display = 'none'
+              e.target.nextSibling.style.display = 'flex'
             }}
           />
-          {/* Brand Name */}
+          {/* Fallback text if image fails */}
           <span style={{
+            display: 'none',
             color: brandConfig.color,
             fontWeight: 900,
-            fontSize: '18px',
+            fontSize: '24px',
             letterSpacing: '2px',
             textTransform: 'uppercase'
           }}>
@@ -417,7 +411,7 @@ export function NotificationToast({ booking, onDismiss }) {
         }} />
 
         {/* ═══════════════════════════════════════════════════════
-            FOOTER GRID: Location + Status
+            FOOTER GRID: Location + STATUS
             ═══════════════════════════════════════════════════════ */}
         <div style={{
           display: 'grid',
@@ -446,8 +440,8 @@ export function NotificationToast({ booking, onDismiss }) {
           </div>
 
           {/* ═════════════════════════════════════════════════════
-              STATUS — Uses STATUS color (green/blue/red)
-              Independent from brand color!
+              STATUS — Shows CONFIRMED (green) or CANCELLED (red)
+              NOT the brand!
               ═════════════════════════════════════════════════════ */}
           <div style={{
             display: 'flex',
