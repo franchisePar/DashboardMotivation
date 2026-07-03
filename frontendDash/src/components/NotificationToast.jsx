@@ -37,11 +37,17 @@ const BW_COLORS = ['#888888', '#aaaaaa', '#cccccc', '#666666', '#999999', '#bbbb
 // ═══════════════════════════════════════════════════════════════
 
 function getBrandConfig(brand, isCancelled) {
-  if (isCancelled) {
-    return { color: '#888888', glow: 'rgba(128, 128, 128, 0.3)' }
-  }
   const b = (brand || 'UNITED').toString().toUpperCase().trim()
-  return BRAND_CONFIGS[b] || BRAND_CONFIGS.UNITED
+  const baseConfig = BRAND_CONFIGS[b] || BRAND_CONFIGS.UNITED
+
+  if (isCancelled) {
+    return {
+      ...baseConfig,                    // ← KEEP logo + original color
+      color: '#888888',
+      glow: 'rgba(128, 128, 128, 0.3)'
+    }
+  }
+  return baseConfig
 }
 
 function getStatusConfig(status) {
