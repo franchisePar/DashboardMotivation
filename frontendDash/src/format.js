@@ -173,6 +173,7 @@ const COUNTRY_CODE_MAP = {
   'TUNISIA': 'tn',
   'TUNISIE': 'tn',
   'TURKEY': 'tr',
+  'ANT/IZM': 'tr',
   'UAE': 'ae',
   'UK': 'gb',
   'USA': 'us',
@@ -833,7 +834,7 @@ const CITY_TO_COUNTRY = {
   'GRYTVIKEN': 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS',
   'ANTARCTICA': 'AQ',
   'MCMURDO': 'AQ',
-  'SOUTH POLE': 'AQ',
+  'SOUTH POLE': 'AQ'
 }
 
 // ── HYBRID FLAG RESOLVER ─────────────────────────────────
