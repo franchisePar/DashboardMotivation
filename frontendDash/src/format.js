@@ -182,6 +182,7 @@ const COUNTRY_CODE_MAP = {
   'VENEZUELA': 've',
   'URUGUAY': 'uy',
   'BOLIVIA': 'bo',
+  'TAMPA' : 'us',
 }
 
 // ── Map: VILLE → NOM DU PAYS ─────────────────────────────
