@@ -1,5 +1,12 @@
 {
   "dependencies": {
-    "countries-list": "^3.3.0"
+    "@deck.gl/aggregation-layers": "^9.3.6",
+    "@deck.gl/layers": "^9.3.6",
+    "@deck.gl/react": "^9.3.6",
+    "countries-list": "^3.3.0",
+    "deck.gl": "^9.3.6",
+    "leaflet": "^1.9.4",
+    "maplibre-gl": "^5.24.0",
+    "react-map-gl": "^8.1.1"
   }
 }
