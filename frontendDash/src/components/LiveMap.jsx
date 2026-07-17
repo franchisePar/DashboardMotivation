@@ -235,7 +235,7 @@ export function LiveMap({ bookings = [] }) {
     let bearing = 0
     const rotate = () => {
       if (!mapRef.current) return
-      bearing = (bearing + 0.004) % 360
+      bearing = (bearing + 0.009) % 360
       mapRef.current.setBearing(bearing)
       rotationRef.current = requestAnimationFrame(rotate)
     }
