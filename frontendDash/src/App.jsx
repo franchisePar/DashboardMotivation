@@ -183,7 +183,7 @@ const topBrandCount = topBrandEntry ? topBrandEntry[1].todayBookings : 0
               <BrandStats stats={brandStats} />
             </div>
 
-            <RecentBookings bookings={cleanBookings.slice(0, 8)} />
+            <RecentBookings bookings={cleanBookings.slice(0, 30)} />
           </section>
 
           <section className="bottom-section">
