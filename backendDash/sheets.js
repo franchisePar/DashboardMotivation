@@ -199,7 +199,7 @@ function buildDashboardData(reservations) {
       const db = b.receivedAtDate ? b.receivedAtDate.getTime() : 0;
       return db - da;
     })
-    .slice(0, 20);
+    .slice(0, 30);
 
   const leaderboard = BRANDS.map((brand) => brandStats[brand])
     .sort((a, b) => b.todayBookings - a.todayBookings);
