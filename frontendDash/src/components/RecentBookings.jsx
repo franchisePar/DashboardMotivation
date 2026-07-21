@@ -1,15 +1,37 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { brandColor, statusColor, countryFlagUrl, formatTime, brandLogo } from '../format'
 import './RecentBookings.css'
 
-export function RecentBookings({ bookings }) {
+const MAX_BOOKINGS = 30
+
+export function RecentBookings({ bookings: incomingBookings }) {
   const listRef = useRef(null)
+  const [allBookings, setAllBookings] = useState([])
 
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = 0
     }
-  }, [bookings.length])
+  }, [allBookings.length])
+
+  // Merge new incoming bookings with existing, keep only last 30
+  useEffect(() => {
+    if (incomingBookings && incomingBookings.length > 0) {
+      setAllBookings(prev => {
+        const merged = [...incomingBookings, ...prev]
+        // Remove duplicates by reservationNumber + receivedAt
+        const seen = new Set()
+        const unique = merged.filter(b => {
+          const key = `${b.reservationNumber}-${b.receivedAt}`
+          if (seen.has(key)) return false
+          seen.add(key)
+          return true
+        })
+        // Keep max 30
+        return unique.slice(0, MAX_BOOKINGS)
+      })
+    }
+  }, [incomingBookings])
 
   const getBrandClass = (brand) => {
     const b = (brand || '').toUpperCase()
@@ -34,7 +56,7 @@ export function RecentBookings({ bookings }) {
         <span className="live-feed__badge">LIVE</span>
       </div>
       <div ref={listRef} className="live-feed__list">
-        {bookings.map((b, i) => {
+        {allBookings.map((b, i) => {
           const isNew = i === 0
           const flagUrl = countryFlagUrl(b.country)
           const logoUrl = brandLogo(b.brand)
@@ -44,7 +66,7 @@ export function RecentBookings({ bookings }) {
 
           return (
             <div
-              key={b.id || `booking-${i}`}
+              key={b.id || `${b.reservationNumber}-${i}`}
               className={`feed-card ${isNew ? 'feed-card--new' : ''}`}
               style={isNew ? { animation: 'new-row-flash 1.5s ease' } : {}}
             >
@@ -61,7 +83,6 @@ export function RecentBookings({ bookings }) {
                 </div>
                 <div className="feed-card__res">{b.reservationNumber || '—'}</div>
               </div>
-              {/* BRAND LOGO instead of text */}
               <img
                 src={logoUrl}
                 alt={b.brand || 'UNITED'}
@@ -73,12 +94,10 @@ export function RecentBookings({ bookings }) {
                   flexShrink: 0,
                 }}
                 onError={(e) => {
-                  // Fallback to text if logo fails
                   e.target.style.display = 'none'
                   e.target.nextSibling.style.display = 'inline'
                 }}
               />
-              {/* Fallback brand text (hidden by default) */}
               <span
                 className={`feed-card__brand ${getBrandClass(b.brand)}`}
                 style={{ display: 'none' }}
@@ -91,7 +110,7 @@ export function RecentBookings({ bookings }) {
             </div>
           )
         })}
-        {bookings.length === 0 && (
+        {allBookings.length === 0 && (
           <div className="feed-card" style={{ justifyContent: 'center', color: 'var(--muted)' }}>
             No bookings yet today
           </div>
