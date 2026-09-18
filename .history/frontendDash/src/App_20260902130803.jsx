@@ -8,7 +8,7 @@ import { BrandStats } from './components/BrandStats'
 import { CountryLeaderboard } from './components/CountryLeaderboard'
 import { HourlyChart } from './components/HourlyChart'
 import { RecentBookings } from './components/RecentBookings'
-import { NotificationToast, useAudioUnlock } from './components/NotificationToast'
+import { NotificationToast } from './components/NotificationToast'
 import { SkeletonLoader } from './components/SkeletonLoader'
 import { brandLogo } from './format'
 import { CalendarCheck, Globe, Trophy } from 'lucide-react'
@@ -17,7 +17,6 @@ import { BrandLogo } from './components/BrandLogo'
 
 
 function App() {
-  useAudioUnlock()
   const { connected, data, loading, lastUpdated, newBookings, clearNewBooking, requestRefresh } = useSocket()
 
   const stats = data?.todayStats || {}
@@ -135,7 +134,7 @@ function App() {
               </div>
               <BrandStats stats={brandStats} />
             </div>
-            <RecentBookings bookings={cleanBookings.slice(0, 30)} />
+       <RecentBookings bookings={cleanBookings.slice(0, 30)} />
           </section>
 
           <section className="bottom-section">

@@ -183,8 +183,8 @@ const COUNTRY_CODE_MAP = {
   'URUGUAY': 'uy',
   'BOLIVIA': 'bo',
   'TAMPA' : 'us',
-  'Montenegro' : 'me',
-  'Bulgaria' : 'bg',
+  'Montenegro' : 'mne',
+  'Bulgarie' : 'bg',
 }
 
 // ── Map: VILLE → NOM DU PAYS ─────────────────────────────

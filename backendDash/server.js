@@ -4,24 +4,11 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 require("dotenv").config();
 
-const path = require("path");
-
 // ═══════════════════════════════════════════════════════════
-// CRITICAL: Log which sheets.js file we're actually using
+// FIXED: Load sheets.js normally — no cache hacking
 // ═══════════════════════════════════════════════════════════
-const sheetsPath = require.resolve("./sheets");
-console.log("📄 Loading sheets.js from:", sheetsPath);
-console.log("📄 File exists:", require("fs").existsSync(sheetsPath));
-
-// Clear require cache EVERY TIME to force reload
-function clearSheetsCache() {
-  const keys = Object.keys(require.cache);
-  const sheetsKeys = keys.filter(k => k.includes("sheets"));
-  sheetsKeys.forEach(k => {
-    console.log("🗑️  Clearing cache:", k);
-    delete require.cache[k];
-  });
-}
+const { fetchSheetData, buildDashboardData } = require("./sheets");
+console.log("📄 sheets.js loaded successfully");
 
 // ── State ───────────────────────────────────────────────
 let cachedData = null;
@@ -45,10 +32,7 @@ async function updateDashboard() {
   try {
     io.emit("loading");
 
-    // FORCE RELOAD sheets.js every time
-    clearSheetsCache();
-    const { fetchSheetData, buildDashboardData } = require("./sheets");
-
+    // FIXED: Use the normally-required module — no cache clearing
     const reservations = await fetchSheetData();
     const dashboard = buildDashboardData(reservations);
 
@@ -76,6 +60,7 @@ async function updateDashboard() {
     console.log(`[${new Date().toLocaleTimeString()}] Updated — ${reservations.length} rows, ${dashboard.todayStats.totalBookings} today`);
   } catch (err) {
     console.error("Update failed:", err.message);
+    console.error("Stack:", err.stack);  // FIXED: Log full stack for debugging
     io.emit("error", { message: err.message });
   } finally {
     isFetching = false;
@@ -89,10 +74,7 @@ app.get("/api/health", (req, res) => {
 
 app.get("/api/dashboard", async (req, res) => {
   try {
-    // FORCE FRESH BUILD — never use cache
-    clearSheetsCache();
-    const { fetchSheetData, buildDashboardData } = require("./sheets");
-
+    // FIXED: Use fresh fetch, not cache-hacked require
     const reservations = await fetchSheetData();
     const dashboard = buildDashboardData(reservations);
 
@@ -100,6 +82,7 @@ app.get("/api/dashboard", async (req, res) => {
     res.json(dashboard);
   } catch (err) {
     console.error("API error:", err.message);
+    console.error("Stack:", err.stack);  // FIXED: Log full stack
     res.status(500).json({ error: err.message });
   }
 });
@@ -108,12 +91,12 @@ app.get("/api/dashboard", async (req, res) => {
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
-  // Send cached data BUT only if it has the new fields
-  if (cachedData && cachedData.todayCountryStats) {
+  // Send cached data to new client
+  if (cachedData) {
     socket.emit("dashboard_update", cachedData);
   } else {
     // Force immediate refresh for new clients
-    console.log("No valid cache for new client, refreshing...");
+    console.log("No cache yet, refreshing for new client...");
     updateDashboard();
   }
 
@@ -134,5 +117,4 @@ const PORT = process.env.PORT || 3001;
 server.listen(PORT, () => {
   console.log(`🚀 Server on port ${PORT}`);
   console.log(`📊 Polling every ${POLL_INTERVAL / 1000}s`);
-  console.log(`⚠️  Cache CLEARED on every request — using fresh sheets.js`);
 });

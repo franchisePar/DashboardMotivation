@@ -174,6 +174,7 @@ const COUNTRY_CODE_MAP = {
   'TUNISIE': 'tn',
   'TURKEY': 'tr',
   'ANT/IZM': 'tr',
+  'AYT/ASR': 'tr',
   'UAE': 'ae',
   'UK': 'gb',
   'USA': 'us',

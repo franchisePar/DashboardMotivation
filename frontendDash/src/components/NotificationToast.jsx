@@ -1,21 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import { X, Sparkles, MapPin } from 'lucide-react'
 
+const CONFIRMED_SOUND_URL = '/sounds/confirm.mp3'
+const CANCELLED_SOUND_URL = '/sounds/CANCEL01.mp3'
+
 const BRAND_CONFIGS = {
-  UNITED: { 
-    color: '#0f27a2',           // United blue
-    glow: 'rgba(15, 39, 162, 0.3)', 
-    logo: '/assets/logos/United_Logo_BG.png' 
+  UNITED: {
+    color: '#0f27a2',
+    glow: 'rgba(15, 39, 162, 0.3)',
+    logo: '/assets/logos/United_Logo_BG.png'
   },
-  MOVIS:  { 
-    color: '#f94231',           // MOVIS red (was wrong!)
-    glow: 'rgba(249, 66, 49, 0.3)', 
-    logo: '/assets/logos/Movis_Logo_BG.png' 
+  MOVIS:  {
+    color: '#f94231',
+    glow: 'rgba(249, 66, 49, 0.3)',
+    logo: '/assets/logos/Movis_Logo_BG.png'
   },
-  DRIVO:  { 
-    color: '#c8fa1b',           // DRIVO lime (was wrong!)
-    glow: 'rgba(200, 250, 27, 0.3)', 
-    logo: '/assets/logos/Drivo_Logo_BG.png' 
+  DRIVO:  {
+    color: '#c8fa1b',
+    glow: 'rgba(200, 250, 27, 0.3)',
+    logo: '/assets/logos/Drivo_Logo_BG.png'
   }
 }
 
@@ -27,6 +30,51 @@ const STATUS_CONFIGS = {
 
 const CONFETTI_COLORS = ['#0f27a2', '#f94231', '#c8fa1b', '#eab308', '#22c55e', '#a855f7']
 const BW_COLORS = ['var(--muted)', 'var(--border-bright)', 'var(--border)', '#94a3b8', '#b0b8c4', '#d1d5db']
+
+// ---- AUDIO ----
+let confirmedAudio = null
+let cancelledAudio = null
+let audioUnlocked = false
+
+function getAudio(isCancelled) {
+  if (isCancelled) {
+    if (!cancelledAudio) {
+      cancelledAudio = new Audio(CANCELLED_SOUND_URL)
+      cancelledAudio.volume = 0.25
+      cancelledAudio.preload = 'auto'
+    }
+    return cancelledAudio
+  }
+  if (!confirmedAudio) {
+    confirmedAudio = new Audio(CONFIRMED_SOUND_URL)
+    confirmedAudio.volume = 0.25
+    confirmedAudio.preload = 'auto'
+  }
+  return confirmedAudio
+}
+
+export function useAudioUnlock() {
+  useEffect(() => {
+    const handler = () => {
+      const a = getAudio(false)
+      const b = getAudio(true)
+      a.play()
+        .then(() => {
+          audioUnlocked = true
+          a.pause()
+          a.currentTime = 0
+        })
+        .catch(() => {})
+      b.play()
+        .then(() => { b.pause(); b.currentTime = 0 })
+        .catch(() => {})
+      window.removeEventListener('pointerdown', handler)
+    }
+    window.addEventListener('pointerdown', handler)
+    return () => window.removeEventListener('pointerdown', handler)
+  }, [])
+}
+// ---- END AUDIO ----
 
 function getBrandConfig(brand, isCancelled) {
   const b = (brand || 'UNITED').toString().toUpperCase().trim()
@@ -74,12 +122,10 @@ function SingleToast({ booking, onDismiss }) {
     : `0 0 40px ${brandConfig.glow}, 0 16px 48px rgba(0,0,0,0.08)`
 
   useEffect(() => {
-    if (!isCancelled) {
-      try {
-        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav')
-        audio.volume = 0.25
-        audio.play().catch(() => {})
-      } catch (e) {}
+    if (audioUnlocked) {
+      const audio = getAudio(isCancelled)
+      audio.currentTime = 0
+      audio.play().catch((err) => console.error('[toast] play failed:', err))
     }
 
     const canvas = canvasRef.current
@@ -224,7 +270,7 @@ function SingleToast({ booking, onDismiss }) {
           </span>
         </div>
 
-        <div style={{ height: '1px', background: isCancelled ? 'linear-gradient(90deg, transparent, var(--border), transparent)' : 'linear-gradient(90deg, transparent, var(--border), transparent)', margin: '4px 0' }} />
+        <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, var(--border), transparent)', margin: '4px 0' }} />
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(0,0,0,0.02)', padding: '14px 16px', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)' }}>
@@ -243,7 +289,7 @@ function SingleToast({ booking, onDismiss }) {
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', fontSize: '11px', color: isCancelled ? 'var(--muted)' : 'var(--muted)', marginTop: '4px', fontWeight: 500 }}>
+        <div style={{ textAlign: 'center', fontSize: '11px', color: 'var(--muted)', marginTop: '4px', fontWeight: 500 }}>
           {isCancelled ? '⚠️ Booking has been cancelled' : '🎊 Woohoo! Another happy customer! 🎊'}
         </div>
       </div>
