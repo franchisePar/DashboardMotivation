@@ -85,7 +85,7 @@ export function RecentBookings({ bookings: incomingBookings }) {
               />
               <div className="feed-card__main">
                 <div className="feed-card__loc">
-                  {b.country || '—'} – {/*b.locationCode || b.city || 'UNK'*/}
+                  {b.country || '—'}  {/*b.locationCode || b.city || 'UNK'*/}
                 </div>
                 <div className="feed-card__res">{b.reservationNumber || '—'}</div>
               </div>
