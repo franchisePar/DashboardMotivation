@@ -110,7 +110,7 @@ const COUNTRY_CODE_MAP = {
   'BOSNIA': 'ba',
   'BOSNIA AND HERZEGOVINA': 'ba',
   'BRAZIL': 'br',
-  'BULGARIA': 'bg',
+  'BULGARIE': 'bg',
   'CANADA': 'ca',
   'CHILE': 'cl',
   'CHINA': 'cn',
