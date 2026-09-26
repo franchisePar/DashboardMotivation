@@ -186,6 +186,7 @@ const COUNTRY_CODE_MAP = {
   'TAMPA' : 'us',
   'Montenegro' : 'me',
   'Bulgarie' : 'bg',
+  'TURCS AND CAICOS': 'tc'
 }
 
 // ── Map: VILLE → NOM DU PAYS ─────────────────────────────
