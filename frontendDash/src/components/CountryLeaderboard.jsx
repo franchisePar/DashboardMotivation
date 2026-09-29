@@ -5,7 +5,7 @@ export function CountryLeaderboard({ countries, todayCountries }) {
     ? todayCountries 
     : countries || []
 
-  const visibleCountries = displayCountries.slice(0, 7)
+  const visibleCountries = displayCountries.slice(0, 15)
   const remaining = displayCountries.length - visibleCountries.length
 
   return (
