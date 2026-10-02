@@ -183,7 +183,7 @@ const COUNTRY_CODE_MAP = {
   'URUGUAY': 'uy',
   'BOLIVIA': 'bo',
   'TAMPA' : 'us',
-  'Montenegro' : 'me',
+  'MONTENEGRO' : 'me',
   'Bulgarie' : 'bg',
   'TURCS AND CAICOS': 'tc'
 }
