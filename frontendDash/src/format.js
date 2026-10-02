@@ -131,7 +131,6 @@ const COUNTRY_CODE_MAP = {
   'INDIA': 'in',
   'INDONESIA': 'id',
   'IRELAND': 'ie',
-  'ISRAEL': 'il',
   'ITALY': 'it',
   'JAPAN': 'jp',
   'KENYA': 'ke',
