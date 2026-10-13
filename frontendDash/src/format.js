@@ -185,7 +185,7 @@ const COUNTRY_CODE_MAP = {
   'TAMPA' : 'us',
   'MONTENEGRO' : 'me',
   'Bulgarie' : 'bg',
-  'TURCS AND CAICOS': 'tc'
+  'TURCS AND CAICOS': 'tc',
   'MACEDONIA': 'mk'
 }
 
