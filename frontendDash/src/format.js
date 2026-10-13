@@ -186,6 +186,7 @@ const COUNTRY_CODE_MAP = {
   'MONTENEGRO' : 'me',
   'Bulgarie' : 'bg',
   'TURCS AND CAICOS': 'tc'
+  'MACEDONIA': 'mk'
 }
 
 // ── Map: VILLE → NOM DU PAYS ─────────────────────────────
